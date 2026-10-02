@@ -1,0 +1,27 @@
+import pandas as pd
+import numpy as np
+import statistics
+
+
+def nan_replace(df, column= "col_name"):
+    '''
+    This function will replace NaN/null values in a column to its average value.
+    params:
+            df = pandas dataframe
+            column (str) = column name to fill the missing values
+    '''
+    #get boolean data of known values
+    NotNullE = pd.notnull(df[column])
+
+    #turn data back into dataframe
+    NotNullEd = df[NotNullE]
+
+    #get mean of known values
+    NotNME = statistics.mean(NotNullEd[column])
+
+    #replace NaN with mean
+    FinishedE = df[column].fillna(NotNME)
+
+    df[column] = FinishedE
+
+    return df
