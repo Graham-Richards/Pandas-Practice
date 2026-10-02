@@ -1,0 +1,17 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import statistics
+import funcs as fn
+
+# Replace every NaN and Null in excel column with mean int data, keep string columns and ignore Null, remove columns with all Null
+
+# go through list of excel columns
+for col in df.columns:
+    # check if the column is numeric, and have at least 1 real value
+    if pd.api.types.is_numeric_dtype(df[col]) and df[col].notnull().any():
+    # turn each column into df, then replace with average NaN using nan_replace function
+        df = fn.nan_replace(df, col)
+        # if column has all NaN values, drop the column from dataframe
+        if df[col].isna().all():
+            df = df.drop(columns=[col])
