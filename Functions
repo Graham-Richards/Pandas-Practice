@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import statistics
-
+import funcs as fn
 
 def nan_median_replace(df, column= "col_name"):
     '''
@@ -27,14 +27,13 @@ def nan_median_replace(df, column= "col_name"):
     return df
 
 
-def nan_mode_replace(df, column):
+def nan_mode_replace(df, column= "col_name"):
     '''
     This function will replace NaN/null values in a column to its mode value.
     params:
             df = pandas dataframe
             column (str) = column name to fill the missing values
     '''
-    # make column into a variable
 
     # replace UNKNOWN with NaN
     df[column] = df[column].replace('UNKNOWN', np.nan)
