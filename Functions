@@ -3,7 +3,7 @@ import numpy as np
 import statistics
 
 
-def nan_replace(df, column= "col_name"):
+def nan_median_replace(df, column= "col_name"):
     '''
     This function will replace NaN/null values in a column to its average value.
     params:
@@ -23,5 +23,29 @@ def nan_replace(df, column= "col_name"):
     FinishedE = df[column].fillna(NotNME)
 
     df[column] = FinishedE
+
+    return df
+
+
+def nan_mode_replace(df, column):
+    '''
+    This function will replace NaN/null values in a column to its mode value.
+    params:
+            df = pandas dataframe
+            column (str) = column name to fill the missing values
+    '''
+    # make column into a variable
+
+    # replace UNKNOWN with NaN
+    df[column] = df[column].replace('UNKNOWN', np.nan)
+
+    #identify KNOWN patients
+    dfknown = df[df[column].notnull()]
+
+    #find mode of known
+    mode_str = statistics.mode(dfknown[column])
+
+    # replace NaN with mode
+    df[column] = df[column].fillna(mode_str)
 
     return df
