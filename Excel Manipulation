@@ -4,16 +4,18 @@ import matplotlib.pyplot as plt
 import statistics
 import funcs as fn
 
-# Replace every NaN and Null in excel column with mean int data, keep string columns and ignore Null, remove columns with all Null
+df = pd.read_csv('C:/workspace/Book.csv')
 
-# go through list of excel columns
-for col in df.columns:
+# Go through a fixed list of the original column names
+for col in list(df.columns):
+
+    # Remove columns that are entirely NaN
     if df[col].isna().all():
         df = df.drop(columns=[col])
-    # check if the column is numeric, and have at least 1 real value
-    if pd.api.types.is_numeric_dtype(df[col]) and df[col].notnull().any():
-    # turn each column into df, then replace with average NaN using nan_replace function
+        continue
+
+    # Only mean-impute numeric columns that contain at least one real value
+    if pd.api.types.is_numeric_dtype(df[col]) and df[col].notna().any():
         df = fn.nan_replace(df, col)
-        # if column has all NaN values, drop the column from dataframe
-    
+
 
