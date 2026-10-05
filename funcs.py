@@ -3,6 +3,7 @@ import numpy as np
 import statistics
 import funcs as fn       # Download this file as funcs.py
 
+
 def nan_median_replace(df, column= "col_name"):
     '''
     This function will replace NaN/null values in a column to its average value.
@@ -46,5 +47,31 @@ def nan_mode_replace(df, column= "col_name"):
 
     # replace NaN with mode
     df[column] = df[column].fillna(mode_str)
+
+    return df
+
+
+
+def clean_data(df):
+    """
+    This function will clean the data by removing columns that are entirely NaN, mean-imputing numeric columns that contain at least one real value, and mode-imputing string columns.
+    params: 
+            df = pandas dataframe
+    """
+    # Go through a fixed list of the original column names
+    for col in list(df.columns):
+
+        # Remove columns that are entirely NaN
+        if df[col].isna().all():
+            df = df.drop(columns=[col])
+            continue
+
+        # Only mean-impute numeric columns that contain at least one real value
+        if pd.api.types.is_numeric_dtype(df[col]) and df[col].notna().any():
+            df = fn.nan_median_replace(df, col)
+
+        # string columns use mode
+        elif pd.api.types.is_numeric_dtype(df[col]) == False:
+            df = fn.nan_mode_replace(df, col)
 
     return df
