@@ -5,7 +5,8 @@ import ipywidgets
 import statistics
 import funcs as fn
 
-from sklearn.impute import KNNImputer, SimpleImputer
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import KNNImputer, SimpleImputer, IterativeImputer
 
 
 df = pd.read_csv('C:/workspace/Book.csv')
@@ -21,4 +22,19 @@ print(df[col].isna().sum())
 
 display(df[col])
 
+
+
+# use fn to remove categorical values, and columns with >70% NaN
+df = fn.structure_missing_values(df)
+
+# get numeric columns
+num_col = df.select_dtypes(include="number").columns
+
+# Create Iterative Imputer
+imp = IterativeImputer(max_iter=10, random_state=0)
+
+# Impute missing numeric values
+df[num_col] = imp.fit_transform(df[num_col])
+
+display(df[num_col])
 
