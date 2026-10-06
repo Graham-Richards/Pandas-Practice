@@ -1,25 +1,24 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import ipywidgets
 import statistics
 import funcs as fn
 
+from sklearn.impute import KNNImputer, SimpleImputer
+
+
 df = pd.read_csv('C:/workspace/Book.csv')
 
-# Go through a fixed list of the original column names
-for col in list(df.columns):
+# Use scikit-learn to impute df
+col = ['Peripheral Blood CD34+ Cells']
 
-    # Remove columns that are entirely NaN
-    if df[col].isna().all():
-        df = df.drop(columns=[col])
-        continue
+imp = SimpleImputer(missing_values=np.nan, strategy='mean')
 
-    # Only mean-impute numeric columns that contain at least one real value
-    if pd.api.types.is_numeric_dtype(df[col]) and df[col].notna().any():
-        df = fn.nan_median_replace(df, col)
+df[col] = imp.fit_transform(df[col])
 
-    # string columns use mode
-    elif pd.api.types.is_numeric_dtype(df[col]) == False:
-        df = fn.nan_mode_replace(df, col)
+print(df[col].isna().sum())
+
+display(df[col])
 
 
