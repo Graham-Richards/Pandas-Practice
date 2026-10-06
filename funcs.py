@@ -82,3 +82,28 @@ def clean_data(df):
             df = fn.nan_mode_replace(df, col)
 
     return df
+
+
+def structure_missing_values(df):
+
+    unstructured_missing_vals = ['', '?', ' ', 'nan', 'N/A', None, 'na', 'None', 'none']
+
+    for col in df.columns:
+        df[col] = df[col].replace(unstructured_missing_vals, np.nan)
+
+    for col in list(df.columns):
+        # Remove columns that are entirely NaN
+        if df[col].isna().all():
+            df = df.drop(columns=[col])
+            continue
+        
+        # Remove columns that are 70% NaN or more
+        if df[col].isna().mean() >= 0.7:
+            df = df.drop(columns=[col])
+            continue
+
+        if pd.api.types.is_numeric_dtype(df[col]) == False:
+            df = df.drop(columns=col)
+
+    return df       
+
