@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import statistics
-import funcs as fn       # Download this file as funcs.py
+import funcs as fn
 
 
 def nan_median_replace(df, column= "col_name"):
@@ -51,7 +51,6 @@ def nan_mode_replace(df, column= "col_name"):
     return df
 
 
-
 def clean_data(df):
     """
     This function will clean the data by removing columns that are entirely NaN, mean-imputing numeric columns that contain at least one real value, and mode-imputing string columns.
@@ -61,11 +60,19 @@ def clean_data(df):
     # Go through a fixed list of the original column names
     for col in list(df.columns):
 
+        # Remove 'UNKNOWN' values and replace with NaN
+        df[col] = df[col].replace('UNKNOWN', np.nan)
+
         # Remove columns that are entirely NaN
         if df[col].isna().all():
             df = df.drop(columns=[col])
             continue
 
+        # Remove columns that are 70% NaN or more
+        if df[col].isna().mean() >= 0.7:
+            df = df.drop(columns=[col])
+            continue
+        
         # Only mean-impute numeric columns that contain at least one real value
         if pd.api.types.is_numeric_dtype(df[col]) and df[col].notna().any():
             df = fn.nan_median_replace(df, col)
