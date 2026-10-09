@@ -22,19 +22,32 @@ print(df[col].isna().sum())
 
 display(df[col])
 
-
-
-# use fn to remove categorical values, and columns with >70% NaN
-df = fn.structure_missing_values(df)
+# use fn to remove numerical values, and columns with >70% NaN
+numdf = fn.structure_missing_values_numeric(df)
 
 # get numeric columns
-num_col = df.select_dtypes(include="number").columns
+num_col = numdf.columns
 
 # Create Iterative Imputer
 imp = IterativeImputer(max_iter=10, random_state=0)
 
 # Impute missing numeric values
-df[num_col] = imp.fit_transform(df[num_col])
+df[num_col] = imp.fit_transform(numdf[num_col])
 
-display(df[num_col])
+df[num_col]
+
+
+#use fn to remove categorical values, and columns with >70% NaN
+catdf = fn.structure_missing_values_categorical(df)
+
+# get cat. columns
+cat_col = catdf.select_dtypes(include="object").columns
+
+# Create Simple Imputer
+imp = SimpleImputer(strategy='most_frequent')
+
+# Impute missing categorical values
+df[cat_col] = imp.fit_transform(catdf[cat_col])
+
+df[cat_col]
 
