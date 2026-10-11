@@ -11,16 +11,7 @@ from sklearn.impute import KNNImputer, SimpleImputer, IterativeImputer
 
 df = pd.read_csv('C:/workspace/Book.csv')
 
-# Use scikit-learn to impute df
-col = ['Peripheral Blood CD34+ Cells']
-
-imp = SimpleImputer(missing_values=np.nan, strategy='mean')
-
-df[col] = imp.fit_transform(df[col])
-
-print(df[col].isna().sum())
-
-display(df[col])
+# MICE Style Approach
 
 # use fn to remove numerical values, and columns with >70% NaN
 numdf = fn.structure_missing_values_numeric(df)
@@ -32,10 +23,7 @@ num_col = numdf.columns
 imp = IterativeImputer(max_iter=10, random_state=0)
 
 # Impute missing numeric values
-df[num_col] = imp.fit_transform(numdf[num_col])
-
-df[num_col]
-
+numdf[num_col] = imp.fit_transform(numdf[num_col])
 
 #use fn to remove categorical values, and columns with >70% NaN
 catdf = fn.structure_missing_values_categorical(df)
@@ -47,7 +35,50 @@ cat_col = catdf.select_dtypes(include="object").columns
 imp = SimpleImputer(strategy='most_frequent')
 
 # Impute missing categorical values
-df[cat_col] = imp.fit_transform(catdf[cat_col])
+catdf[cat_col] = imp.fit_transform(catdf[cat_col])
 
-df[cat_col]
+# COMBINE NUMERIC + CATEGORICAL
+df_imputed = pd.concat([numdf, catdf], axis=1)
+
+# Save
+df_imputed.to_csv("ImputedData.csv", index=False)
+
+display(df_imputed)
+
+
+
+
+# KNN Approach
+
+# Get usable numeric data
+numdf = fn.structure_missing_values_numeric(df)
+
+# Get numeric columns
+num_col = numdf.columns
+
+# Create KNN Imputer
+knn_imp = KNNImputer(n_neighbors=5)
+
+# Impute missing numeric values
+numdf[num_col] = knn_imp.fit_transform(numdf[num_col])
+
+# Get usable categorical data
+catdf = fn.structure_missing_values_categorical(df)
+
+# Get categorical columns
+cat_col = catdf.select_dtypes(include="object").columns
+
+# Create categorical imputer
+cat_imp = SimpleImputer(strategy="most_frequent")
+
+# Impute missing categorical values
+catdf[cat_col] = cat_imp.fit_transform(catdf[cat_col])
+
+# combine both df
+df_knn = pd.concat([numdf, catdf], axis=1)
+
+# Save
+df_knn.to_csv("KNN_ImputedData.csv", index=False)
+
+display(df_knn)
 
